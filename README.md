@@ -1,73 +1,63 @@
-# Configuration serveur Red-Hat / CentOS
+# Guide de Configuration pour Serveurs Red-Hat / CentOS
 
-## Effacer l'ancienne empreinte digitale
-> ssh-keygen -R ipserver
+## Effacer une Empreinte Digitale SSH
+Avant de se connecter, nettoyez l'ancienne empreinte digitale SSH associée au serveur.
 
-## Vérifier si le ping fonctionne avant ssh
-> ping ipserver
+```bash
+ssh-keygen -R ipserveur
+```
 
-## Connexion ssh vers le serveur
-> ssh -lroot -p22 ipserver
+## Vérification de la Connectivité
+Assurez-vous que le serveur est accessible via ping avant de démarrer une session SSH.
 
-> psswdserver
+```bash
+ping ipserveur
+```
 
-## Savoir qui est connecté sur le serveur 
-> who
+## Connexion SSH
+Connectez-vous au serveur via SSH en utilisant le compte root et le mot de passe associé.
 
-## Mises à jour système
-### Mettez à jour la liste des paquets disponibles
-> sudo yum update
-### Mettez à jour les paquets installés
-> sudo yum upgrade
-### Pour mettre à jour le noyau et d'autres paquets
-> sudo yum distro-sync
-### Pour supprimer les paquets qui ne sont plus nécessaires
-> sudo yum autoremove
+```bash
+ssh -l root -p 22 ipserveur
+```
 
-## Ajouter un utilisateur
-> sudo adduser nameuser
+## Vérification des Utilisateurs Connectés
+Vérifiez les utilisateurs actuellement connectés au serveur.
 
-## Changez le nom d'utilisateur 
-> sudo usermod -l newname oldname
+```bash
+who
+```
 
-## Modifier le mot de passe d'un utilisateur
-> sudo passwd username
+## Mises à Jour du Système
 
-## Mise à jour du groupe 
-> sudo groupmod -n newname oldname
+| Action                                  | Commande                  |
+|-----------------------------------------|---------------------------|
+| Mettre à Jour la Liste des Paquets      | `sudo yum update`         |
+| Mettre à Jour les Paquets Installés     | `sudo yum upgrade`        |
+| Mettre à Jour le Noyau et Autres Paquets| `sudo yum distro-sync`    |
+| Supprimer les Paquets Obsolètes         | `sudo yum autoremove`     |
 
-## Changez le nom du répertoire home de l'utilisateur 
-> sudo usermod -d /home/newname -m newname
+## Gestion des Utilisateurs
 
-## Ajouter l'utilisateur au groupe root
-> sudo usermod -aG wheel username
+| Action                                  | Commande                                          |
+|-----------------------------------------|---------------------------------------------------|
+| Ajout d'un Utilisateur                  | `sudo adduser nomutilisateur`                     |
+| Changement du Nom d'Utilisateur         | `sudo usermod -l nouveaunom ancienom`            |
+| Modification du Mot de Passe            | `sudo passwd nomutilisateur`                      |
+| Mise à Jour du Groupe                   | `sudo groupmod -n nouveaunom ancienom`           |
+| Changement du Répertoire Home            | `sudo usermod -d /home/nouveaunom -m nouveaunom` |
+| Ajout d'un Utilisateur au Groupe Root   | `sudo usermod -aG wheel nomutilisateur`          |
+| Vérification du Groupe de l'Utilisateur | `groups nomutilisateur`                           |
 
-## Vérifier le groupe de l'utilisateur
-> groups username
+## Configuration SSH
 
-## Changer le port de connexion SSH
-### Ouvrez le fichier de configuration SSH
-> sudo nano /etc/ssh/sshd_config
-### Redémarrez le service SSH
-> sudo systemctl restart sshd
-### Vérifiez que le service SSH est actif
-> sudo systemctl status sshd
+| Action                                     | Commande                                        |
+|--------------------------------------------|-------------------------------------------------|
+| Changement de Port SSH                     | 1. Ouvrez le fichier de configuration SSH.<br>`sudo nano /etc/ssh/sshd_config` <br><br> 2. Redémarrez le service SSH.<br>`sudo systemctl restart sshd` <br><br> 3. Vérifiez que le service SSH est actif.<br>`sudo systemctl status sshd` |
+| Désactivation de l'Accès Root via SSH     | 1. Ouvrez le fichier de configuration SSH.<br>`sudo nano /etc/ssh/sshd_config` <br><br> 2. Recherchez la ligne `PermitRootLogin` et modifiez-la comme suit :<br>`PermitRootLogin no` <br><br> 3. Redémarrez le service SSH.<br>`sudo systemctl restart sshd` |
 
-## Désactivez le mot de passe du compte root
-> sudo passwd -l root
+## Génération de Certificat HTTPS
 
-## Désactiver la connexion root
-### Ouvrez le fichier de configuration SSH 
-> sudo nano /etc/ssh/sshd_config
-### Recherchez la ligne PermitRootLogin
-> PermitRootLogin no
-### Redémarrez le service SSH
-> sudo systemctl restart sshd
-
-## Générer le certificat HTTPS
-
-### Avec les sous domaine
-> sudo certbot certonly --manual --preferred-challenges=dns-01 --server https://acme-v02.api.letsencrypt.org/directory -d "*.arecode.fr" -d arecode.fr
-
-### Sans les sous domaine
-> sudo certbot certonly --manual --preferred-challenges=dns-01 --server https://acme-v02.api.letsencrypt.org/directory -d arecode.fr
+| Avec Sous-Domaines                        | Sans Sous-Domaines                              |
+|-------------------------------------------|-------------------------------------------------|
+| `sudo certbot certonly --manual --preferred-challenges=dns-01 --server https://acme-v02.api.letsencrypt.org/directory -d "*.arecode.fr" -d arecode.fr` | `sudo certbot certonly --manual --preferred-challenges=dns-01 --server https://acme-v02.api.letsencrypt.org/directory -d arecode.fr` |
